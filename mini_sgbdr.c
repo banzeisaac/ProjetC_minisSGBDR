@@ -36,3 +36,58 @@ typedef struct {
     int nb_enregistrements;                     // Nombre d'enregistrements dans la table
 } BDD;
 
+BDD bdds[MAX_TABLES];            // Tableau des tables
+int nb_bdds = 0;                 // Nombre de tables créées
+
+// Fonction pour créer une nouvelle table
+void creer_table() {
+    if (nb_bdds >= MAX_TABLES) { // Vérifie si le nombre maximum de tables est atteint
+        printf("Nombre maximum de tables atteint.\n");
+        return;
+    }
+
+    BDD nouvelle_table;          // Crée une nouvelle table
+    printf("Entrez le nom de la nouvelle table: ");
+    scanf("%s", nouvelle_table.nom);  // Demande le nom de la nouvelle table
+    nouvelle_table.nb_champs = 0;     // Initialise le nombre de champs à 0
+    nouvelle_table.nb_enregistrements = 0; // Initialise le nombre d'enregistrements à 0
+
+    bdds[nb_bdds++] = nouvelle_table; // Ajoute la nouvelle table au tableau des tables
+    printf("Table '%s' créée avec succès.\n", nouvelle_table.nom); // Affiche un message de succès
+}
+
+// Fonction pour trouver l'index d'une table par son nom
+int trouver_table(char *nom_table) {
+    for (int i = 0; i < nb_bdds; i++) {          // Parcourt toutes les tables
+        if (strcmp(bdds[i].nom, nom_table) == 0) { // Compare les noms des tables
+            return i;                           // Retourne l'index si le nom correspond
+        }
+    }
+    return -1; // Retourne -1 si la table n'est pas trouvée
+}
+
+// Fonction pour ajouter des champs à une table
+void ajouter_champ(BDD *bdd) {
+    if (bdd->nb_champs >= MAX_CHAMPS) {          // Vérifie si le nombre maximum de champs est atteint
+        printf("Nombre maximum de champs atteint pour cette table.\n");
+        return;
+    }
+
+    int nb_champs_a_ajouter;
+    printf("Combien de champs voulez-vous ajouter? ");
+    scanf("%d", &nb_champs_a_ajouter);           // Demande le nombre de champs à ajouter
+
+    for (int i = 0; i < nb_champs_a_ajouter; i++) {
+        Champ nouveau_champ;
+        printf("Entrez le nom du champ: ");
+        scanf("%s", nouveau_champ.nom);          // Demande le nom du nouveau champ
+        printf("Entrez le type du champ (0 pour ENTIER, 1 pour CHAINE): ");
+        int type;
+        scanf("%d", &type);                      // Demande le type du nouveau champ
+        nouveau_champ.type = (type == 0) ? ENTIER : CHAINE; // Définit le type du champ
+
+        bdd->champs[bdd->nb_champs++] = nouveau_champ; // Ajoute le nouveau champ à la table
+        printf("Champ '%s' ajouté avec succès.\n", nouveau_champ.nom); // Affiche un message de succès
+    }
+}
+
