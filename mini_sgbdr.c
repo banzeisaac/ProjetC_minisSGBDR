@@ -91,3 +91,125 @@ void ajouter_champ(BDD *bdd) {
     }
 }
 
+// Fonction pour insérer des données dans une table
+void inserer_donnees(BDD *bdd) {
+    if (bdd->nb_enregistrements >= MAX_ENREGISTREMENTS) { // Vérifie si le nombre maximum d'enregistrements est atteint
+        printf("Nombre maximum d'enregistrements atteint pour cette table.\n");
+        return;
+    }
+
+    Enregistrement nouvel_enregistrement;
+    for (int i = 0; i < bdd->nb_champs; i++) {
+        printf("Entrez la valeur pour le champ '%s': ", bdd->champs[i].nom);
+        if (bdd->champs[i].type == ENTIER) {
+            scanf("%d", &nouvel_enregistrement.valeurs[i].entier); // Demande la valeur entière
+        } else {
+            scanf("%s", nouvel_enregistrement.valeurs[i].chaine); // Demande la valeur chaîne
+        }
+    }
+
+    bdd->enregistrements[bdd->nb_enregistrements++] = nouvel_enregistrement; // Ajoute le nouvel enregistrement à la table
+    printf("Enregistrement ajouté avec succès.\n"); // Affiche un message de succès
+}
+
+// Fonction pour afficher les données d'une table
+void afficher_donnees(BDD *bdd) {
+    for (int i = 0; i < bdd->nb_champs; i++) {
+        printf("%s\t", bdd->champs[i].nom); // Affiche les noms des champs
+    }
+    printf("\n");
+
+    for (int i = 0; i < bdd->nb_enregistrements; i++) {
+        for (int j = 0; j < bdd->nb_champs; j++) {
+            if (bdd->champs[j].type == ENTIER) {
+                printf("%d\t", bdd->enregistrements[i].valeurs[j].entier); // Affiche les valeurs entières
+            } else {
+                printf("%s\t", bdd->enregistrements[i].valeurs[j].chaine); // Affiche les valeurs chaînes
+            }
+        }
+        printf("\n");
+    }
+}
+
+// Fonction pour supprimer une table
+void supprimer_table(int index) {
+    for (int i = index; i < nb_bdds - 1; i++) {
+        bdds[i] = bdds[i + 1]; // Décale les tables vers la gauche pour écraser la table supprimée
+    }
+    nb_bdds--; // Décrémente le nombre de tables
+    printf("Table supprimée avec succès.\n"); // Affiche un message de succès
+}
+
+// Fonction pour supprimer un champ d'une table
+void supprimer_champ(BDD *bdd, int champ_index) {
+    for (int i = champ_index; i < bdd->nb_champs - 1; i++) {
+        bdd->champs[i] = bdd->champs[i + 1]; // Décale les champs vers la gauche pour écraser le champ supprimé
+    }
+    bdd->nb_champs--; // Décrémente le nombre de champs
+    printf("Champ supprimé avec succès.\n"); // Affiche un message de succès
+}
+
+// Fonction pour mettre à jour un champ d'une table
+void mettre_a_jour_champ(BDD *bdd, int champ_index) {
+    Champ *champ = &bdd->champs[champ_index];
+    printf("Entrez le nouveau nom pour le champ '%s': ", champ->nom);
+    scanf("%s", champ->nom); // Demande le nouveau nom du champ
+    printf("Champ mis à jour avec succès.\n"); // Affiche un message de succès
+}
+
+// Fonction pour mettre à jour la valeur d'un champ d'un enregistrement
+void mettre_a_jour_valeur(BDD *bdd, int champ_index, int enregistrement_index) {
+    Enregistrement *enregistrement = &bdd->enregistrements[enregistrement_index];
+    printf("Entrez la nouvelle valeur pour le champ '%s': ", bdd->champs[champ_index].nom);
+    if (bdd->champs[champ_index].type == ENTIER) {
+        scanf("%d", &enregistrement->valeurs[champ_index].entier); // Demande la nouvelle valeur entière
+    } else {
+        scanf("%s", enregistrement->valeurs[champ_index].chaine); // Demande la nouvelle valeur chaîne
+    }
+    printf("Valeur mise à jour avec succès.\n"); // Affiche un message de succès
+}
+
+// Fonction pour mettre à jour les données d'une table
+void mettre_a_jour_donnees(BDD *bdd) {
+    int sous_choix;
+    printf("1. Mettre à jour un champ\n");
+    printf("2. Mettre à jour une valeur\n");
+    printf("Entrez votre choix: ");
+    scanf("%d", &sous_choix);
+
+    switch (sous_choix) {
+        case 1: {
+            printf("Entrez l'index du champ à mettre à jour (0 à %d): ", bdd->nb_champs - 1);
+            int champ_index;
+            scanf("%d", &champ_index);
+            if (champ_index < 0 || champ_index >= bdd->nb_champs) {
+                printf("Index de champ invalide.\n");
+                return;
+            }
+            mettre_a_jour_champ(bdd, champ_index);
+            break;
+        }
+        case 2: {
+            printf("Entrez l'index de l'enregistrement à mettre à jour (0 à %d): ", bdd->nb_enregistrements - 1);
+            int enregistrement_index;
+            scanf("%d", &enregistrement_index);
+            if (enregistrement_index < 0 || enregistrement_index >= bdd->nb_enregistrements) {
+                printf("Index d'enregistrement invalide.\n");
+                return;
+            }
+            printf("Entrez l'index du champ à mettre à jour (0 à %d): ", bdd->nb_champs - 1);
+            int champ_index;
+            scanf("%d", &champ_index);
+            if (champ_index < 0 || champ_index >= bdd->nb_champs) {
+                printf("Index de champ invalide.\n");
+                return;
+            }
+            mettre_a_jour_valeur(bdd, champ_index, enregistrement_index);
+            break;
+        }
+        default:
+            printf("Choix invalide.\n");
+            break;
+    }
+}
+
